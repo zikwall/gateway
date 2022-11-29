@@ -1,0 +1,18 @@
+services:
+  - service: "some"
+    url: "grpc://0.0.0.0:1337"
+    prefix: "/some"
+    auth: false
+    endpoints:
+     - /v1/public/handler_one
+     - /v1/private/handler_two
+  - service: "another"
+    url: "grpc://0.0.0.0:1339"
+    prefix: "/another"
+    auth: false
+    endpoints:
+      - /v1/public/handler_one
+      - /v1/public/handler_two
+default:
+  service: "Default"
+  url: "http://0.0.0.0:80"

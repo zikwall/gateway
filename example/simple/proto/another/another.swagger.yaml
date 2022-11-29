@@ -1,0 +1,99 @@
+swagger: "2.0"
+info:
+    title: another.proto
+    version: version not set
+tags:
+    - name: Another
+consumes:
+    - application/json
+produces:
+    - application/json
+paths:
+    /v1/private/handler_two:
+        post:
+            operationId: Another_HandlerTwo
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/V1HandlerTwoResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: body
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/V1HandlerTwoRequest'
+            tags:
+                - Another
+    /v1/public/handler_one:
+        get:
+            operationId: Another_HandlerOne
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/V1HandlerOneResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: code
+                  in: query
+                  required: false
+                  type: string
+                - name: lang
+                  in: query
+                  required: false
+                  type: string
+                  format: int64
+            tags:
+                - Another
+definitions:
+    V1HandlerOneResponse:
+        type: object
+        properties:
+            code:
+                type: string
+            message:
+                type: string
+            title:
+                type: string
+    V1HandlerTwoRequest:
+        type: object
+        properties:
+            language:
+                type: string
+            languageId:
+                type: string
+                format: int64
+    V1HandlerTwoResponse:
+        type: object
+        properties:
+            errorCode:
+                type: string
+            id:
+                type: integer
+                format: int32
+    protobufAny:
+        type: object
+        properties:
+            '@type':
+                type: string
+        additionalProperties: {}
+    rpcStatus:
+        type: object
+        properties:
+            code:
+                type: integer
+                format: int32
+            details:
+                type: array
+                items:
+                    $ref: '#/definitions/protobufAny'
+            message:
+                type: string

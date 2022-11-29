@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package Some.V1;
+import "google/api/annotations.proto";
+
+option go_package = "github.com/zikwall/some/another/v1";
+
+service Some {
+  rpc HandlerOne (HandlerOneRequest) returns (HandlerOneResponse) {
+    option (google.api.http) = {
+      get: "/v1/public/handler_one"
+    };
+  };
+
+  rpc HandlerTwo (HandlerTwoRequest) returns (HandlerTwoResponse) {
+    option (google.api.http) = {
+      post: "/v1/private/handler_two"
+      body: "*"
+    };
+  };
+}
+
+message HandlerOneRequest {
+  string system = 1;
+}
+
+message HandlerOneResponse {
+  string system = 1;
+  string os = 2;
+  string hardware = 3;
+}
+
+message HandlerTwoRequest {
+  string code = 1;
+  int64 id = 2;
+  bool is_reviewed = 3;
+}
+
+message HandlerTwoResponse {
+  int32 code = 1;
+  string error = 2;
+}
