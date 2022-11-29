@@ -18,9 +18,14 @@ import (
 )
 
 const (
+	XRealIP    = "X-Real-IP"
+	XRequestID = "X-Request-ID"
+)
+
+const (
 	startBufferSize    = 2048
 	grpcConnectTimeOut = time.Second * 10
-	traceIDHeaderKey   = "X-Trace-Id"
+	shutdownTimeout    = time.Second * 5
 )
 
 type MiddlewareFn = func(http.Handler) http.Handler
@@ -38,6 +43,7 @@ type Gateway struct {
 	routerMiddlewares []MiddlewareFn
 	grpcMiddlewares   []GRPCMiddlewareFn
 	grpcDialTimeout   time.Duration
+	shutdownTimeout   time.Duration
 }
 
 func (g *Gateway) Run(ctx context.Context) error {
@@ -69,7 +75,7 @@ func (g *Gateway) AddGRPCServiceRegistry(service string, registry *GRPCServiceRe
 }
 
 func (g *Gateway) Shutdown(ctx context.Context) error {
-	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+	ctx, cancel := context.WithTimeout(ctx, g.shutdownTimeout)
 	defer cancel()
 
 	if err := g.http.Shutdown(ctx); err != nil {
@@ -258,6 +264,7 @@ func New(options ...Option) (*Gateway, error) {
 		grpcConn:        make(map[string]*grpc.ClientConn),
 		discover:        defaultDiscover,
 		grpcDialTimeout: grpcConnectTimeOut,
+		shutdownTimeout: shutdownTimeout,
 	}
 	for _, option := range options {
 		option(g)
@@ -267,10 +274,10 @@ func New(options ...Option) (*Gateway, error) {
 
 func customMatcher(key string) (string, bool) {
 	switch strings.ToLower(key) {
-	case strings.ToLower("X-Real-IP"):
+	case strings.ToLower(XRealIP):
 		return key, true
-	case strings.ToLower("X-Request-ID"):
-		return "X-Request-ID", true
+	case strings.ToLower(XRequestID):
+		return XRequestID, true
 	default:
 		return runtime.DefaultHeaderMatcher(key)
 	}

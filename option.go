@@ -57,3 +57,9 @@ func WithGRPCDialOptions(options ...grpc.DialOption) Option {
 		g.grpcDialOptions = options
 	}
 }
+
+func WithShutdownTimeout(timeout time.Duration) Option {
+	return func(g *Gateway) {
+		g.shutdownTimeout = timeout
+	}
+}

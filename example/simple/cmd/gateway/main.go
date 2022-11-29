@@ -46,6 +46,7 @@ func main() {
 		gateway.WithServiceMapper(mapper),
 		gateway.WithDiscovery(discovery.NewEnvironment().Lookup),
 		gateway.WithGRPCDialTimeout(time.Second*10),
+		gateway.WithShutdownTimeout(time.Second*5),
 		gateway.WithServices(map[string]*gateway.GRPCServiceRegistry{
 			"another": gateway.NewServiceRegistry(v12.RegisterAnotherHandler),
 		}),
@@ -98,7 +99,7 @@ func main() {
 
 // XRealIPHeader http header
 // nolint:gochecknoglobals // it's OK
-var XRealIPHeader = http.CanonicalHeaderKey("X-Real-IP")
+var XRealIPHeader = http.CanonicalHeaderKey(gateway.XRealIP)
 
 func XRealIP(h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
